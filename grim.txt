@@ -1,0 +1,290 @@
+#include <iostream>
+#include <vector>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+// Base class Shape
+class pice {
+   public:
+      pice(bool in_cur, int in_x, pice* in_borad[64]) 
+      : cur(in_cur), x(in_x), this_borad(in_borad) {}
+
+      pice() {};
+
+      virtual bool test_move (int in_x) =0;
+
+      void set_pos(int in_x) {
+         x = in_x;
+      }
+
+      int off_set() {
+         return x;
+      }
+
+      int temp_test(int in_x) {
+        return this_borad[in_x]->off_set();
+      }
+
+      bool is_not_cur(bool in_cur) {
+         return is_not_set() ? true : cur != in_cur;
+      }
+
+      bool is_not_set() {
+         return type == "  ";
+      }
+
+      bool test(int j, int t, bool in_cur) {
+
+               
+               std::cout << "test" << '\n';
+
+               std::cout << "j " << j << '\n';
+               std::cout << "t " << t << '\n';
+
+               if (off_set() < t)
+                  
+         for(unsigned int i = off_set() + j; i != t - j; i = i + j){
+            std::cout << i << " ==== " << (t - j) << '\n';
+            std::cout << this_borad[i]->is_not_set() << " poo" << '\n';
+            sleep(1);
+            if(!this_borad[i]->is_not_set()){
+
+               
+
+               return false;
+            }
+         }
+                        std::cout << "testsdfsdf" << '\n';
+
+         std::cout << "this_borad[t]->is_not_cur(in_cur) " << this_borad[t]->is_not_cur(in_cur) << '\n';
+         return this_borad[t]->is_not_cur(in_cur);
+
+      }
+
+      std::string get_type() {
+         return type;
+      }
+      
+   protected:
+      int x;
+      bool cur;
+      pice** this_borad;
+      std::string type;
+};
+
+class pp: public pice {
+public:
+      pp(bool in_cur, int in_x, pice* in_borad[64]) : 
+      pice(in_cur, in_x, in_borad) {type = "PP";}
+
+      bool test_move(int x) {
+         int temp = cur ? -1 : 1;
+         std::cout << x << '\n';
+         std::cout << temp << '\n';
+         std::cout << (x == 8 * temp || x == 16 * temp ) << '\n';
+         std::cout << (this_borad[x + off_set()]->is_not_set()) << '\n';
+         std::cout << (this_borad[x + off_set()]->is_not_cur(cur)) << '\n';
+         std::cout << "ppp" << '\n';
+
+
+         return (x * temp == 8 || x * temp == 16) ? this_borad[x + off_set()]->is_not_set() : false &&
+            (x * temp == 9 || x * temp == 7) ? 
+            this_borad[x + off_set()]->is_not_cur(cur) : false;
+      }
+
+
+};
+
+class rr: public pice {
+public:
+      rr(bool in_cur, int in_x, pice* in_borad[64]) : 
+      pice(in_cur, in_x, in_borad) {type = "RR";}
+
+      bool test_move(int x) {
+         int abs_x = abs(x - off_set());
+         std::cout << "x " << x << '\n';
+         std::cout << "off_set() " << off_set() << '\n';
+         std::cout << "abs_x " << abs_x << '\n';
+         if(abs_x < 8)
+            return test(1, x, cur);
+         else if((abs_x) % 8 == 0)
+            return test(8, x, cur);
+         std::cout << "test_move v2 fail" << '\n';
+         return false;
+      }
+};
+
+class kn: public pice {
+public:
+      kn(bool in_cur, int in_x, pice* in_borad[64]) : 
+      pice(in_cur, in_x, in_borad) {type = "KN";}
+
+      bool test_move(int x) {
+         int abs_x = abs(x);
+
+         return (abs_x == 17 || abs_x == 15 || abs_x == 10 || abs_x == 6) ? 
+            this_borad[x + off_set()]->is_not_cur(cur) : false;
+      }
+
+
+};
+
+class bb: public pice {
+public:
+      bb(bool in_cur, int in_x, pice* in_borad[64]) : 
+      pice(in_cur, in_x, in_borad) {type = "BB";}
+
+      bool test_move(int x) {
+         int abs_x = abs(x);
+
+         if((x + 1) % 7 == 0)
+            return test(7, x, cur);
+         else if((x + 1) % 9 == 0)
+            return test(9, x, cur);
+         else
+            return false;
+      }
+
+
+};
+
+class ki: public pice {
+public:
+      ki(bool in_cur, int in_x, pice* in_borad[64]) : 
+      pice(in_cur, in_x, in_borad) {type = "KI";}
+
+      bool test_move(int x) {
+         int abs_x = abs(x);
+
+         return (abs_x == 9 || abs_x == 8 || abs_x == 7 || abs_x == 1) ? 
+            this_borad[x + off_set()]->is_not_cur(!cur) : false;
+      }
+
+
+};
+
+class qq: public pice {
+public:
+      qq(bool in_cur, int in_x, pice* in_borad[64]) : 
+      pice(in_cur, in_x, in_borad) {type = "QQ";}
+
+      bool test_move(int x) {
+         int abs_x = abs(x - off_set());
+
+         if(x < 8)
+            return test(1, x, cur);
+         else if((x + 1) % 7 == 0)
+            return test(7, x, cur);
+         else if((x + 1) % 8 == 0)
+            return test(8, x, cur);
+         else if((x + 1) % 9 == 0)
+            return test(9, x, cur);
+         else
+            return false;
+      }
+
+
+};
+
+class em: public pice {
+public:
+      em() : pice() {type = "  ";}
+
+      bool test_move(int x) { return false; }
+};
+
+class borad {
+   public:
+      borad() {
+
+         //this_borad.push_back( std_unique_ptr<pice>(new rr(false, 0, this_borad)) );
+
+         this_borad[0]  = new rr(false, 0, this_borad);
+         this_borad[1]  = new kn(false, 1, this_borad);
+         this_borad[2]  = new bb(false, 2, this_borad);
+         this_borad[3]  = new qq(false, 3, this_borad);
+         this_borad[4]  = new ki(false, 4, this_borad);
+         this_borad[5]  = new bb(false, 5, this_borad);
+         this_borad[6]  = new kn(false, 6, this_borad);
+         this_borad[7]  = new rr(false, 7, this_borad);
+         this_borad[56] = new rr(true, 56, this_borad);
+         this_borad[57] = new ki(true, 57, this_borad);
+         this_borad[58] = new bb(true, 58, this_borad);
+         this_borad[59] = new ki(true, 59, this_borad);
+         this_borad[60] = new qq(true, 60, this_borad);
+         this_borad[61] = new bb(true, 61, this_borad);
+         this_borad[62] = new ki(true, 62, this_borad);
+         this_borad[63] = new rr(true, 63, this_borad);
+
+         for (unsigned int i=8; i < 56; i++){
+            this_borad[i] = empty;
+         }
+         /*for (unsigned int i=16; i < 48; i++){
+            this_borad[i] = empty;
+         }
+         for (unsigned int k=0; k < 8; k++){
+            this_borad[k+8]  = new pp(false, k, this_borad);
+            this_borad[k+48] = new pp(true, k+48, this_borad);
+         }*/
+      }
+
+      bool move_pice(int old_x, int new_x, bool cur_in) {
+         if (this_borad[old_x]->is_not_cur(!cur_in)) {
+            std::cout << (new_x) << '\n';
+            std::cout << (this_borad[old_x]->off_set()) << '\n';
+            if (this_borad[old_x]->test_move(new_x)) {
+               this_borad[new_x] = this_borad[old_x];
+               this_borad[new_x]->set_pos(new_x);
+               this_borad[old_x] = empty;
+            }
+            else
+               std::cout << "test_move fail" << '\n';
+         }
+         else
+            std::cout << "is_not_cur fail" << '\n';
+      }
+
+      int pos(int x, int y) {
+         return x + (y * 8);
+      }
+
+      void output() {
+         int temp;
+         color("35", "||||||||||||||||||||||||||||||||||\n");
+         for (unsigned int i=1; i < 9; i++){
+            for (unsigned int j=0; j < 8; j++){
+               temp = (i * 8 - 8 + j);
+               //std::cout << temp << '\n';
+               color("35", "||");
+               if (this_borad[temp]->is_not_cur(true))
+                  color("33", this_borad[temp]->get_type());
+               else
+                  color("37", this_borad[temp]->get_type());
+            }
+            color("35", "||\n||||||||||||||||||||||||||||||||||\n");
+         }
+      }
+
+      void color(std::string color = "7", std::string message = ""){
+         std::cout << "\33[" + color + "m" << message;
+      }
+
+   private:
+      pice *this_borad[64];
+      pice *empty = new em();
+};
+
+
+
+
+int main() {
+
+   borad tt = borad();
+   tt.output();
+   //tt.move_pice(8, 24, false);
+   tt.move_pice(7, 55, false);
+   tt.move_pice(55, 50, false);
+   tt.output();
+
+}
